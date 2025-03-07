@@ -57,8 +57,8 @@ const Car: React.FC<CarProps> = ({ setCarRef }) => {
   }, [keys]);
 
   useFrame(() => {
-    const forwardForce = 100;
-    const torqueForce = 10;
+    const forwardForce = 50;
+    const torqueForce = 5;
     
     if (ref.current) {
       // Compute the car's world position.
