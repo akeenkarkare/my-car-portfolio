@@ -19,7 +19,7 @@ const Car: React.FC<CarProps> = ({ setCarRef }) => {
     angularDamping: 0.9,
     linearDamping: 0.9,
     allowSleep: false,
-    material: { friction: 1, restitution: 0 },
+    material: { friction: 1, restitution: 0.5 },
   }));
 
   const { camera } = useThree();

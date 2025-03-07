@@ -8,6 +8,8 @@ import Ground from './components/Ground';
 import FollowCamera from './components/FollowCamera';
 import Track from './components/Track';
 import Border from './components/Border';
+import TrackCurb from './components/TrackCurb';
+import Forest from './components/Forest';
 
 const Page: React.FC = () => {
   // We'll store the car's mesh (Object3D) here.
@@ -22,6 +24,8 @@ const Page: React.FC = () => {
           <Car setCarRef={(mesh) => (carRef.current = mesh)} />
           <Ground />
           <Border />
+          <TrackCurb />
+          <Forest />
         </Physics>
         <Track />
         <FollowCamera target={carRef} />

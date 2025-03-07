@@ -9,7 +9,7 @@ const Ground: React.FC = () => {
     rotation: [-Math.PI / 2, 0, 0],
     position: [0, 0, 0],
     // Set the ground's material properties
-    material: { friction: 0.001, restitution: 0 },
+    material: { friction: 0.001, restitution: 0.5 },
   }));
 
   return (

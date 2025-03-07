@@ -34,7 +34,7 @@ const Track: React.FC = () => {
     );
 
     const extrudeSettings = {
-      steps: 100,
+      steps: 1000,
       extrudePath: curve,
       bevelEnabled: true,
     };
