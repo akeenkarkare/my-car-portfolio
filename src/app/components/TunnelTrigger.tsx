@@ -14,6 +14,7 @@ interface TunnelTriggerProps {
   redirectPath?: string;
   destinationLabel?: string;
   promptLabel?: string;
+  rotation?: [number, number, number];
 }
 
 const TunnelTrigger: React.FC<TunnelTriggerProps> = ({
@@ -23,6 +24,7 @@ const TunnelTrigger: React.FC<TunnelTriggerProps> = ({
   redirectPath = '/projects',
   destinationLabel = 'Projects',
   promptLabel = 'Press E to Teleport',
+  rotation = [0, 0, 0], // Added default rotation
 }) => {
   const router = useRouter();
   const [inTunnel, setInTunnel] = useState(false);
@@ -85,7 +87,7 @@ const TunnelTrigger: React.FC<TunnelTriggerProps> = ({
   }, [inTunnel, router, redirectPath]);
 
   return (
-    <group position={position}>
+    <group position={position} rotation={rotation}>
       {/* Tunnel Mesh */}
       {tunnelGeometry ? (
         <mesh geometry={tunnelGeometry}>
@@ -114,7 +116,7 @@ const TunnelTrigger: React.FC<TunnelTriggerProps> = ({
       {/* Prompt text appears when inside the tunnel */}
       {inTunnel && (
         <Text
-          position={[0, radius + 0.2, -0.118]}
+          position={[0, radius + 0.4, -0.118]}
           fontSize={0.4}
           color="yellow"
           anchorX="center"
