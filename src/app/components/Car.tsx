@@ -3,17 +3,17 @@
 import React, { useState, useEffect } from 'react';
 import { useBox } from '@react-three/cannon';
 import { Mesh, Vector3 } from 'three';
-import { useFrame } from '@react-three/fiber';
-import { useThree as useThreeFiber } from '@react-three/fiber';
+import { useFrame, useThree as useThreeFiber } from '@react-three/fiber';
 
 interface CarProps {
   setCarRef: (obj: Mesh) => void;
+  position?: [number, number, number];  // Allows position to be passed as a prop
 }
 
-const Car: React.FC<CarProps> = ({ setCarRef }) => {
+const Car: React.FC<CarProps> = ({ setCarRef, position = [0, 0.25, 0] }) => {
   const [ref, api] = useBox<Mesh>(() => ({
     mass: 1,
-    position: [0, 0.25, 0],
+    position,
     args: [1, 0.5, 2],
     angularFactor: [0, 1, 0],
     angularDamping: 0.9,
@@ -23,6 +23,7 @@ const Car: React.FC<CarProps> = ({ setCarRef }) => {
   }));
 
   const { camera } = useThree();
+  
   // When ref.current becomes available, pass it to the parent
   useEffect(() => {
     if (ref.current) {
@@ -72,12 +73,11 @@ const Car: React.FC<CarProps> = ({ setCarRef }) => {
       desiredForward.y = 0;
       desiredForward.normalize();
     
-      // Up arrow applies force in the desired forward direction.
+      // Apply force for forward/backward movement.
       if (keys.ArrowUp) {
         const force = desiredForward.clone().multiplyScalar(forwardForce);
         api.applyForce([force.x, force.y, force.z], [0, 0, 0]);
       }
-      // Down arrow applies force in the reverse of that direction.
       if (keys.ArrowDown) {
         const force = desiredForward.clone().negate().multiplyScalar(forwardForce);
         api.applyForce([force.x, force.y, force.z], [0, 0, 0]);
@@ -106,4 +106,3 @@ function useThree() {
   const { camera } = useThreeFiber();
   return { camera };
 }
-

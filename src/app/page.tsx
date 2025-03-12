@@ -11,10 +11,13 @@ import Track from './components/Track';
 import Border from './components/Border';
 import TrackCurb from './components/TrackCurb';
 import Forest from './components/Forest';
-import Tunnels from './components/Tunnels'; // New component for multiple tunnels
+import Tunnels from './components/Tunnels';
 
 const Page: React.FC = () => {
   const carRef = useRef<any>(null);
+
+  // Set the spawn position of the car (x, y, z) where you'd like it on the track
+  const carSpawnPosition: [number, number, number] = [-25, 1, 5]; // Adjust this based on your track's design
 
   return (
     <div style={{ height: '100vh', backgroundColor: 'lightblue', position: 'relative' }}>
@@ -22,7 +25,8 @@ const Page: React.FC = () => {
         <ambientLight intensity={0.5} />
         <directionalLight position={[10, 10, 5]} intensity={1} castShadow />
         <Physics>
-          <Car setCarRef={(mesh) => (carRef.current = mesh)} />
+          {/* Pass the position prop for the car's spawn point */}
+          <Car setCarRef={(mesh) => (carRef.current = mesh)} position={carSpawnPosition} />
           <Ground />
           <Border />
           <TrackCurb />
@@ -30,7 +34,6 @@ const Page: React.FC = () => {
         </Physics>
         <Track />
         <FollowCamera target={carRef} />
-        {/* Use Tunnels component to render multiple tunnel triggers */}
         <Tunnels carRef={carRef} />
       </Canvas>
     </div>
