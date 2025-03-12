@@ -26,11 +26,13 @@ const TunnelTrigger: React.FC<TunnelTriggerProps> = ({
 }) => {
   const router = useRouter();
   const [inTunnel, setInTunnel] = useState(false);
+  // Use state to hold the computed geometry so that re-render occurs when it's ready.
+  const [tunnelGeometry, setTunnelGeometry] = useState<ExtrudeGeometry | null>(null);
   const triggeredRef = useRef(false);
-  const tunnelGeomRef = useRef<ExtrudeGeometry | null>(null);
 
   // Create the semicircular tunnel geometry once.
   useEffect(() => {
+    console.log("[TunnelTrigger] Computing tunnel geometry with radius:", radius);
     const shape = new Shape();
     // Create a semicircle (arc from 0 to PI). Flat side will be at the bottom.
     shape.absarc(0, 0, radius, 0, Math.PI, false);
@@ -42,10 +44,10 @@ const TunnelTrigger: React.FC<TunnelTriggerProps> = ({
       bevelEnabled: false,
     };
     const geom = new ExtrudeGeometry(shape, extrudeSettings);
-    // Rotate so the flat side faces upward or aligns with your wall.
-    // Adjust the rotation as needed.
+    // Rotate so the flat side faces upward (adjust as needed).
     geom.rotateY(Math.PI);
-    tunnelGeomRef.current = geom;
+    console.log("[TunnelTrigger] Tunnel geometry computed:", geom);
+    setTunnelGeometry(geom);
   }, [radius]);
 
   // Each frame, check the distance from the car to the tunnel center.
@@ -55,11 +57,14 @@ const TunnelTrigger: React.FC<TunnelTriggerProps> = ({
     carRef.current.getWorldPosition(carPos);
     const tunnelCenter = new Vector3(...position);
     const dist = carPos.distanceTo(tunnelCenter);
+    console.log("[TunnelTrigger] Distance to tunnel center:", dist);
     const isInside = dist < radius;
     if (isInside !== inTunnel) {
+      console.log("[TunnelTrigger] Tunnel state changed. isInside:", isInside);
       setInTunnel(isInside);
       if (!isInside) {
         triggeredRef.current = false;
+        console.log("[TunnelTrigger] Car left tunnel. Resetting trigger.");
       }
     }
   });
@@ -68,6 +73,7 @@ const TunnelTrigger: React.FC<TunnelTriggerProps> = ({
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (inTunnel && !triggeredRef.current && e.key.toLowerCase() === 'e') {
+        console.log("[TunnelTrigger] 'E' key pressed inside tunnel. Triggering teleport.");
         e.preventDefault();
         e.stopPropagation();
         triggeredRef.current = true;
@@ -81,9 +87,15 @@ const TunnelTrigger: React.FC<TunnelTriggerProps> = ({
   return (
     <group position={position}>
       {/* Tunnel Mesh */}
-      {tunnelGeomRef.current && (
-        <mesh geometry={tunnelGeomRef.current}>
+      {tunnelGeometry ? (
+        <mesh geometry={tunnelGeometry}>
           <meshStandardMaterial color="black" />
+        </mesh>
+      ) : (
+        // Temporary mesh to indicate geometry is not ready
+        <mesh>
+          <boxGeometry args={[1, 1, 1]} />
+          <meshStandardMaterial color="red" />
         </mesh>
       )}
       {/* Destination label always visible above the tunnel */}
@@ -99,7 +111,7 @@ const TunnelTrigger: React.FC<TunnelTriggerProps> = ({
       >
         {destinationLabel}
       </Text>
-      {/* Prompt text appears when in the tunnel */}
+      {/* Prompt text appears when inside the tunnel */}
       {inTunnel && (
         <Text
           position={[0, radius + 0.2, -0.118]}
