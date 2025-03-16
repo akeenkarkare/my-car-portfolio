@@ -36,6 +36,10 @@ const Car: React.FC<CarProps> = ({ setCarRef, position = [0, 0.25, 0] }) => {
     ArrowDown: false,
     ArrowLeft: false,
     ArrowRight: false,
+    w: false,
+    a: false,
+    s: false,
+    d: false,
   });
 
   useEffect(() => {
@@ -58,8 +62,8 @@ const Car: React.FC<CarProps> = ({ setCarRef, position = [0, 0.25, 0] }) => {
   }, [keys]);
 
   useFrame(() => {
-    const forwardForce = 50;
-    const torqueForce = 5;
+    const forwardForce = 50;  // Adjust as needed
+    const torqueForce = 5;  // Adjust as needed
     
     if (ref.current) {
       // Compute the car's world position.
@@ -67,28 +71,27 @@ const Car: React.FC<CarProps> = ({ setCarRef, position = [0, 0.25, 0] }) => {
       ref.current.getWorldPosition(carPos);
       
       // Compute the desired forward direction as the vector from the camera to the car.
-      // Since the camera is behind the car, this vector points in the car's "driving" direction.
       const desiredForward = carPos.clone().sub(camera.position);
       // Remove the vertical component so the force is purely horizontal.
       desiredForward.y = 0;
       desiredForward.normalize();
     
       // Apply force for forward/backward movement.
-      if (keys.ArrowUp) {
+      if (keys.ArrowUp || keys.w) {  // Move forward (W or ArrowUp)
         const force = desiredForward.clone().multiplyScalar(forwardForce);
         api.applyForce([force.x, force.y, force.z], [0, 0, 0]);
       }
-      if (keys.ArrowDown) {
+      if (keys.ArrowDown || keys.s) {  // Move backward (S or ArrowDown)
         const force = desiredForward.clone().negate().multiplyScalar(forwardForce);
         api.applyForce([force.x, force.y, force.z], [0, 0, 0]);
       }
     }
     
     // Left/right apply torque for turning.
-    if (keys.ArrowLeft) {
+    if (keys.ArrowLeft || keys.a) {  // Turn left (A or ArrowLeft)
       api.applyTorque([0, torqueForce, 0]);
     }
-    if (keys.ArrowRight) {
+    if (keys.ArrowRight || keys.d) {  // Turn right (D or ArrowRight)
       api.applyTorque([0, -torqueForce, 0]);
     }
   });
@@ -102,6 +105,7 @@ const Car: React.FC<CarProps> = ({ setCarRef, position = [0, 0.25, 0] }) => {
 };
 
 export default Car;
+
 function useThree() {
   const { camera } = useThreeFiber();
   return { camera };

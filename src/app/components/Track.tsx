@@ -5,44 +5,41 @@ import { ExtrudeGeometry, Shape, CatmullRomCurve3, Vector3 } from 'three';
 
 const Track: React.FC = () => {
   const geometry = useMemo(() => {
-    // Define the cross-section of the track so its bottom is at y=0
-    const roadWidth = 0.1;
+    const roadWidth = 0.1; // Track width
     const halfWidth = roadWidth / 2;
-    const roadThickness = 10; // Adjust thickness if desired
+    const roadThickness = 10; // Track thickness (height)
 
+    // Define the shape of the track (cross-section)
     const shape = new Shape();
-    // Bottom edge at y=0, top edge at y=0.1
     shape.moveTo(-halfWidth, 0);
     shape.lineTo(halfWidth, 0);
     shape.lineTo(halfWidth, roadThickness);
     shape.lineTo(-halfWidth, roadThickness);
-    shape.closePath(); // Ensure the shape is closed
+    shape.closePath(); // Close the shape to complete the rectangle
 
-    // Define a closed curve at y=0 for the track path
+    // Define the track path using a CatmullRomCurve3 (smooth curve)
     const curve = new CatmullRomCurve3(
       [
-        new Vector3(0, 0, -30),
+        new Vector3(0, 0, -30),  // Start of the track
         new Vector3(20, 0, -10),
         new Vector3(20, 0, 0),
         new Vector3(15, 0, 10),
         new Vector3(5, 0, 20),
         new Vector3(-5, 0, 35),
         new Vector3(-20, 0, 5),
-        new Vector3(-5, 0, -5),
+        new Vector3(-5, 0, -5),  // End of the track (connect back to the start)
       ],
-      true // closed curve
+      true // Close the curve to make the track a loop
     );
 
     const extrudeSettings = {
-      steps: 1000,
-      extrudePath: curve,
-      bevelEnabled: true,
+      steps: 200,
+      depth: roadThickness,
+      bevelEnabled: false,
     };
 
-    // Create the extruded geometry without additional translation
-    const geom = new ExtrudeGeometry(shape, extrudeSettings);
-
-    return geom;
+    const geometry = new ExtrudeGeometry(shape, { ...extrudeSettings, extrudePath: curve });
+    return geometry;
   }, []);
 
   return (
