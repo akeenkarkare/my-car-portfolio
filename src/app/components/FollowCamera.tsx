@@ -18,18 +18,18 @@ const FollowCamera: React.FC<FollowCameraProps> = ({ target }) => {
 
   useFrame(() => {
     if (target.current) {
-      // 1) Get car’s current position and rotation
+      // 1) Get car's current position and rotation
       const carPosition = new Vector3();
       target.current.getWorldPosition(carPosition);
 
       const carQuaternion = new Quaternion();
       target.current.getWorldQuaternion(carQuaternion);
 
-      // 2) Clone the offset each frame so we don’t rotate the same vector repeatedly
+      // 2) Clone the offset each frame so we don't rotate the same vector repeatedly
       const offset = baseOffset.clone();
       offset.applyQuaternion(carQuaternion);
 
-      // 3) Add that offset to the car’s position for the desired camera position
+      // 3) Add that offset to the car's position for the desired camera position
       const desiredPosition = carPosition.clone().add(offset);
 
       // 4) Smoothly move the camera

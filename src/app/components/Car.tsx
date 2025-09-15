@@ -29,7 +29,7 @@ const Car: React.FC<CarProps> = ({ setCarRef, position = [0, 0.25, 0] }) => {
     if (ref.current) {
       setCarRef(ref.current);
     }
-  }, [ref.current, setCarRef]);
+  }, [ref, setCarRef]);
 
   const [keys, setKeys] = useState({
     ArrowUp: false,
@@ -43,13 +43,14 @@ const Car: React.FC<CarProps> = ({ setCarRef, position = [0, 0.25, 0] }) => {
   });
 
   useEffect(() => {
+    const validKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'w', 'a', 's', 'd'];
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key in keys) {
+      if (validKeys.includes(e.key)) {
         setKeys((prev) => ({ ...prev, [e.key]: true }));
       }
     };
     const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.key in keys) {
+      if (validKeys.includes(e.key)) {
         setKeys((prev) => ({ ...prev, [e.key]: false }));
       }
     };
@@ -59,7 +60,7 @@ const Car: React.FC<CarProps> = ({ setCarRef, position = [0, 0.25, 0] }) => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [keys]);
+  }, []);
 
   useFrame(() => {
     const forwardForce = 50;  // Adjust as needed
@@ -97,7 +98,7 @@ const Car: React.FC<CarProps> = ({ setCarRef, position = [0, 0.25, 0] }) => {
   });
 
   return (
-    <mesh ref={ref as any} castShadow>
+    <mesh ref={ref} castShadow>
       <boxGeometry args={[1, 0.5, 2]} />
       <meshStandardMaterial color="red" />
     </mesh>
